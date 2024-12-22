@@ -1,5 +1,8 @@
-let algorithm = '';
-const nodes = {
+// Store the currently selected traversal algorithm
+let algorithm = '';  // Keep original variable name for compatibility
+
+// Define coordinates for each country node in the graph
+const nodes = {  // Keep original name for compatibility
     'Pakistan': {x: 100, y: 100},
     'India': {x: 200, y: 200},
     'China': {x: 300, y: 100},
@@ -22,7 +25,8 @@ const nodes = {
     'Maldives': {x: 200, y: 500}
 };
 
-const graph = {
+// Define connections between countries (adjacency list)
+const graph = {  // Keep original name for compatibility
     'Pakistan': ['India', 'China'],
     'India': ['Nepal', 'Bangladesh', 'Sri Lanka'],
     'China': ['Russia', 'Mongolia'],
@@ -45,7 +49,8 @@ const graph = {
     'Maldives': []
 };
 
-const costs = {
+// Define travel costs between connected countries
+const costs = {  // Keep original name for compatibility
     'Pakistan': {'India': 2, 'China': 4},
     'India': {'Nepal': 3, 'Bangladesh': 5, 'Sri Lanka': 7},
     'China': {'Russia': 6, 'Mongolia': 8},
@@ -63,28 +68,37 @@ const costs = {
     'Australia': {'New Zealand': 9}
 };
 
-function setAlgorithm(algo) {
+// Handle algorithm selection
+function setAlgorithm(algo) {  // Keep original function name
     algorithm = algo;
     alert(`Selected Algorithm: ${algorithm}`);
 }
 
-function drawGraph() {
+// Render the graph on the canvas
+function drawGraph() {  // Keep original function name
     const canvas = document.getElementById('graphCanvas');
     const ctx = canvas.getContext('2d');
 
+    // Clear previous drawings
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Draw country nodes
     for (let node in nodes) {
         const {x, y} = nodes[node];
+        
+        // Draw node circle
         ctx.beginPath();
         ctx.arc(x, y, 20, 0, 2 * Math.PI);
         ctx.fillStyle = 'white';
         ctx.fill();
         ctx.stroke();
+        
+        // Add country label
         ctx.fillStyle = 'black';
         ctx.fillText(node, x - 10, y - 30);
     }
 
+    // Draw connections between countries
     for (let node in graph) {
         for (let neighbor of graph[node]) {
             const startX = nodes[node].x;
@@ -100,7 +114,8 @@ function drawGraph() {
     }
 }
 
-function startTraversal() {
+// Begin the graph traversal
+function startTraversal() {  // Keep original function name
     if (!algorithm) {
         alert('Please select an algorithm first!');
         return;
@@ -119,17 +134,20 @@ function startTraversal() {
     }
 }
 
-function bfs(graph, start, end) {
+// Breadth-First Search implementation
+function bfs(graph, start, end) {  // Keep original function name
     let queue = [start];
     let visited = new Set();
 
     while (queue.length > 0) {
         let node = queue.shift();
         highlightNode(node);
+        
         if (node === end) {
             alert(`Path found using BFS: ${node}`);
             return;
         }
+        
         if (!visited.has(node)) {
             visited.add(node);
             queue = queue.concat(graph[node] || []);
@@ -138,17 +156,20 @@ function bfs(graph, start, end) {
     alert('No path found using BFS');
 }
 
-function dfs(graph, start, end) {
+// Depth-First Search implementation
+function dfs(graph, start, end) {  // Keep original function name
     let stack = [start];
     let visited = new Set();
 
     while (stack.length > 0) {
         let node = stack.pop();
         highlightNode(node);
+        
         if (node === end) {
             alert(`Path found using DFS: ${node}`);
             return;
         }
+        
         if (!visited.has(node)) {
             visited.add(node);
             stack = stack.concat(graph[node] || []);
@@ -157,7 +178,8 @@ function dfs(graph, start, end) {
     alert('No path found using DFS');
 }
 
-function ucs(graph, start, end) {
+// Uniform Cost Search implementation
+function ucs(graph, start, end) {  // Keep original function name
     let pq = new PriorityQueue();
     pq.enqueue([start, 0]);
     let costsToNode = {};
@@ -167,10 +189,12 @@ function ucs(graph, start, end) {
     while (!pq.isEmpty()) {
         let [node, cost] = pq.dequeue();
         highlightNode(node);
+        
         if (node === end) {
             alert(`Path found using UCS: ${node}`);
             return;
         }
+        
         if (!visited.has(node)) {
             visited.add(node);
             let neighbors = graph[node] || [];
@@ -186,9 +210,10 @@ function ucs(graph, start, end) {
     alert('No path found using UCS');
 }
 
+// Priority Queue implementation for UCS
 class PriorityQueue {
     constructor() {
-        this.collection = [];
+        this.collection = [];  // Keep original property name
     }
 
     enqueue(element) {
@@ -197,7 +222,7 @@ class PriorityQueue {
         } else {
             let added = false;
             for (let i = 0; i < this.collection.length; i++) {
-                if (element[1] < this.collection[i][1]) { // checking the priority
+                if (element[1] < this.collection[i][1]) {
                     this.collection.splice(i, 0, element);
                     added = true;
                     break;
@@ -218,7 +243,8 @@ class PriorityQueue {
     }
 }
 
-function highlightNode(node) {
+// Highlight visited nodes during traversal
+function highlightNode(node) {  // Keep original function name
     const canvas = document.getElementById('graphCanvas');
     const ctx = canvas.getContext('2d');
     const {x, y} = nodes[node];
@@ -230,4 +256,5 @@ function highlightNode(node) {
     ctx.stroke();
 }
 
+// Initialize the graph visualization
 drawGraph();
