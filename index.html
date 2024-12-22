@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Traversal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="margin-left: 20px; font-weight: bolder;">Graphical Representation</div>
+        <nav style="margin-right: 20px;">
+            <ul class="dropdown">
+                <li><a href="#">Algorithms</a>
+                    <ul>
+                        <li><a href="#" onclick="setAlgorithm('BFS')">BFS</a></li>
+                        <li><a href="#" onclick="setAlgorithm('DFS')">DFS</a></li>
+                        <li><a href="#" onclick="setAlgorithm('UCS')">UCS</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="canvas-container">
+        <canvas id="graphCanvas" width="800" height="650"></canvas>
+    </div>
+    <button id="start-button" onclick="startTraversal()">Start</button>
+    <script src="script.js"></script>
+</body>
+</html>
