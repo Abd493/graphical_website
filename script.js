@@ -1,5 +1,5 @@
-let selectedAlgorithm = '';
-const locations = {
+let algorithm = '';
+const nodes = {
     'Pakistan': {x: 100, y: 100},
     'India': {x: 200, y: 200},
     'China': {x: 300, y: 100},
@@ -22,7 +22,7 @@ const locations = {
     'Maldives': {x: 200, y: 500}
 };
 
-const routes = {
+const graph = {
     'Pakistan': ['India', 'China'],
     'India': ['Nepal', 'Bangladesh', 'Sri Lanka'],
     'China': ['Russia', 'Mongolia'],
@@ -45,7 +45,7 @@ const routes = {
     'Maldives': []
 };
 
-const travelCosts = {
+const costs = {
     'Pakistan': {'India': 2, 'China': 4},
     'India': {'Nepal': 3, 'Bangladesh': 5, 'Sri Lanka': 7},
     'China': {'Russia': 6, 'Mongolia': 8},
@@ -63,36 +63,34 @@ const travelCosts = {
     'Australia': {'New Zealand': 9}
 };
 
-
-function selectAlgorithm(algo) {
-    selectedAlgorithm = algo;
-    alert(`Selected Algorithm: ${selectedAlgorithm}`);
+function setAlgorithm(algo) {
+    algorithm = algo;
+    alert(`Selected Algorithm: ${algorithm}`);
 }
 
-
-function renderGraph() {
+function drawGraph() {
     const canvas = document.getElementById('graphCanvas');
     const ctx = canvas.getContext('2d');
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (let location in locations) {
-        const {x, y} = locations[location];
+    for (let node in nodes) {
+        const {x, y} = nodes[node];
         ctx.beginPath();
         ctx.arc(x, y, 20, 0, 2 * Math.PI);
         ctx.fillStyle = 'white';
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = 'black';
-        ctx.fillText(location, x - 10, y - 30);
+        ctx.fillText(node, x - 10, y - 30);
     }
 
-    for (let location in routes) {
-        for (let neighbor of routes[location]) {
-            const startX = locations[location].x;
-            const startY = locations[location].y;
-            const endX = locations[neighbor].x;
-            const endY = locations[neighbor].y;
+    for (let node in graph) {
+        for (let neighbor of graph[node]) {
+            const startX = nodes[node].x;
+            const startY = nodes[node].y;
+            const endX = nodes[neighbor].x;
+            const endY = nodes[neighbor].y;
 
             ctx.beginPath();
             ctx.moveTo(startX, startY);
@@ -102,87 +100,84 @@ function renderGraph() {
     }
 }
 
-function initiateTraversal() {
-    if (!selectedAlgorithm) {
+function startTraversal() {
+    if (!algorithm) {
         alert('Please select an algorithm first!');
         return;
     }
 
-    renderGraph();
+    drawGraph();
     const start = 'Pakistan';
-    const destination = 'Maldives';
+    const end = 'Maldives';
 
-    if (selectedAlgorithm === 'BFS') {
-        breadthFirstSearch(routes, start, destination);
-    } else if (selectedAlgorithm === 'DFS') {
-        depthFirstSearch(routes, start, destination);
-    } else if (selectedAlgorithm === 'UCS') {
-        uniformCostSearch(routes, start, destination);
+    if (algorithm === 'BFS') {
+        bfs(graph, start, end);
+    } else if (algorithm === 'DFS') {
+        dfs(graph, start, end);
+    } else if (algorithm === 'UCS') {
+        ucs(graph, start, end);
     }
 }
 
-
-function breadthFirstSearch(routes, start, end) {
+function bfs(graph, start, end) {
     let queue = [start];
     let visited = new Set();
 
     while (queue.length > 0) {
-        let location = queue.shift();
-        highlightLocation(location);
-        if (location === end) {
-            alert(`Path found using BFS: ${location}`);
+        let node = queue.shift();
+        highlightNode(node);
+        if (node === end) {
+            alert(`Path found using BFS: ${node}`);
             return;
         }
-        if (!visited.has(location)) {
-            visited.add(location);
-            queue = queue.concat(routes[location] || []);
+        if (!visited.has(node)) {
+            visited.add(node);
+            queue = queue.concat(graph[node] || []);
         }
     }
     alert('No path found using BFS');
 }
 
-
-function depthFirstSearch(routes, start, end) {
+function dfs(graph, start, end) {
     let stack = [start];
     let visited = new Set();
 
     while (stack.length > 0) {
-        let location = stack.pop();
-        highlightLocation(location);
-        if (location === end) {
-            alert(`Path found using DFS: ${location}`);
+        let node = stack.pop();
+        highlightNode(node);
+        if (node === end) {
+            alert(`Path found using DFS: ${node}`);
             return;
         }
-        if (!visited.has(location)) {
-            visited.add(location);
-            stack = stack.concat(routes[location] || []);
+        if (!visited.has(node)) {
+            visited.add(node);
+            stack = stack.concat(graph[node] || []);
         }
     }
     alert('No path found using DFS');
 }
 
-
-function uniformCostSearch(routes, start, end) {
+function ucs(graph, start, end) {
     let pq = new PriorityQueue();
     pq.enqueue([start, 0]);
-    let costsToLocation = {};
-    costsToLocation[start] = 0;
+    let costsToNode = {};
+    costsToNode[start] = 0;
     let visited = new Set();
 
     while (!pq.isEmpty()) {
-        let [location, cost] = pq.dequeue();
-        highlightLocation(location);
-        if (location === end) {
-            alert(`Path found using UCS: ${location}`);
+        let [node, cost] = pq.dequeue();
+        highlightNode(node);
+        if (node === end) {
+            alert(`Path found using UCS: ${node}`);
             return;
         }
-        if (!visited.has(location)) {
-            visited.add(location);
-            let neighbors = routes[location] || [];
+        if (!visited.has(node)) {
+            visited.add(node);
+            let neighbors = graph[node] || [];
             for (let neighbor of neighbors) {
-                let newCost = cost + (travelCosts[location][neighbor] || 0);
-                if (!costsToLocation[neighbor] || newCost < costsToLocation[neighbor]) {
-                    costsToLocation[neighbor] = newCost;
+                let newCost = cost + (costs[node][neighbor] || 0);
+                if (!costsToNode[neighbor] || newCost < costsToNode[neighbor]) {
+                    costsToNode[neighbor] = newCost;
                     pq.enqueue([neighbor, newCost]);
                 }
             }
@@ -191,43 +186,42 @@ function uniformCostSearch(routes, start, end) {
     alert('No path found using UCS');
 }
 
-
 class PriorityQueue {
     constructor() {
-        this.queue = [];
+        this.collection = [];
     }
 
-    enqueue(item) {
+    enqueue(element) {
         if (this.isEmpty()) {
-            this.queue.push(item);
+            this.collection.push(element);
         } else {
             let added = false;
-            for (let i = 0; i < this.queue.length; i++) {
-                if (item[1] < this.queue[i][1]) {
-                    this.queue.splice(i, 0, item);
+            for (let i = 0; i < this.collection.length; i++) {
+                if (element[1] < this.collection[i][1]) { // checking the priority
+                    this.collection.splice(i, 0, element);
                     added = true;
                     break;
                 }
             }
             if (!added) {
-                this.queue.push(item);
+                this.collection.push(element);
             }
         }
     }
 
     dequeue() {
-        return this.queue.shift();
+        return this.collection.shift();
     }
 
     isEmpty() {
-        return this.queue.length === 0;
+        return this.collection.length === 0;
     }
 }
 
-function highlightLocation(location) {
+function highlightNode(node) {
     const canvas = document.getElementById('graphCanvas');
     const ctx = canvas.getContext('2d');
-    const {x, y} = locations[location];
+    const {x, y} = nodes[node];
 
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, 2 * Math.PI);
@@ -236,4 +230,4 @@ function highlightLocation(location) {
     ctx.stroke();
 }
 
-renderGraph();
+drawGraph();
